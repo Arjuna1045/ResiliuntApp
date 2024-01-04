@@ -178,8 +178,8 @@ export function Login({navigation}) {
               /> */}
               </View>
               <View style={{flexDirection: 'column',alignItems:'center'}}>
-                {/* <Text style={loginstyles.textBig}>Welcome </Text>
-                <Text style={loginstyles.totext}>to </Text> */}
+               
+             
                 <View style={{width: 300, height: 100}}>
                   <Image
                     source={require('./assets/logoo.png')}
