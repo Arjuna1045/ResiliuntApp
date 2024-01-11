@@ -13,8 +13,9 @@ import {
   StatusBar,
   SafeAreaView,
   Image,
+  Linking,
 } from 'react-native';
-
+import auth from '@react-native-firebase/auth';
 import {Formik, useFormik} from 'formik';
 import axios, {Axios} from 'axios';
 import {Endpoints} from './API/Endpoints';
@@ -45,40 +46,68 @@ export function Login({navigation}) {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: 'YOUR_WEB_CLIENT_ID_FROM_FIREBASE',
-      offlineAccess: true,
-      forceCodeForRefreshToken: true,
+      scopes: ['https://www.googleapis.com/auth/userinfo.email'], // what API you want to access on behalf of the user, default is email and profile
+      webClientId: '180491280564-iibljgcrto8th1fr2g978ijum2khujap.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the idToken on the user object, and for offline access.
+      // offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+      // hostedDomain: '', // specifies a hosted domain restriction
+      // forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
+      // accountName: '', // [Android] specifies an account name on the device that should be used
+      // iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+      // googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. GoogleService-Info-Staging
+      // openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
+      // profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
     });
   }, []);
-  const [user, setUser] = useState('');
+
+
+const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
   const [role, setRole] = useState('');
   const handleShowEye = () => {
     setShowpwd(() => !showpwd);
   };
 
-  const signInWithGoogle = async () => {
+const [loggedIn, setloggedIn] = useState(false);
+const [userInfo, setuserInfo] = useState([]);
+
+async function onGoogleButtonPress() {
+
+  // Check if your device supports Google Play
+  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+  // Get the users ID token
+  const { idToken } = await GoogleSignin.signIn();
+
+  // Create a Google credential with the token
+  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+  // Sign-in the user with the credential
+  return auth().signInWithCredential(googleCredential);
+}
+
+  const _signIn = async () => {
+    console.log("Called")
+    // Linking.openURL("https://auth.multitenancy.realware.app/auth/realms/undergrid/protocol/openid-connect/auth?client_id=rw_viewer&redirect_uri=https://sccom.realware.app/&response_type=code&scope=openid&kc_idp_hint=google")
     try {
       await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      const googleCredential = firebase.auth.GoogleAuthProvider.credential(
-        userInfo.idToken,
-      );
-      await firebase.auth().signInWithCredential(googleCredential);
-      console.log('Logged in with Google!', userInfo);
+      const data = await GoogleSignin.signIn();
+      setloggedIn(true);
+      console.log("Response is ....",data)
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // User cancelled the login flow
-        console.log('Sign in cancelled');
+        // user cancelled the login flow
+        Alert.alert('Cancel');
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log('Sign in is in progress');
+        Alert.alert('Signin in progress');
+        // operation (f.e. sign in) is in progress already
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log('Play services not available');
+        Alert.alert('PLAY_SERVICES_NOT_AVAILABLE');
+        // play services not available or outdated
       } else {
-        console.log('Something went wrong:', error);
+        console.log("[ Error : ] ",error)
       }
     }
   };
+
   const [loader, setLoader] = useState(true);
   const checkAccessToken = async () => {
     const storedAccessToken = await getToken();
@@ -139,8 +168,8 @@ export function Login({navigation}) {
 
     if (jsonResponse.hasOwnProperty('access_token')) {
       saveToken(jsonResponse.access_token);
-      let uname = user.split('@');
-      setUname(uname[0]);
+      
+      setUname(user);
       let newExp = Date.now() + jsonResponse.expires_in * 1000;
       await setTokenInfo(newExp);
       navigation.navigate('Grid');
@@ -310,8 +339,14 @@ export function Login({navigation}) {
                     style={loginstyles.button}
                     size={GoogleSigninButton.Size.Wide}
                     color={GoogleSigninButton.Color.Dark}
-                    onPress={signInWithGoogle}
+                    onPress={onGoogleButtonPress}
                   /> */}
+                  <GoogleSigninButton
+                style={{width: 192, height: 48}}
+                size={GoogleSigninButton.Size.Wide}
+                color={GoogleSigninButton.Color.Dark}
+                onPress={_signIn} 
+              /> 
                 </View>
 
                 {/* <TouchableOpacity>

@@ -11,8 +11,11 @@ import {Endpoints} from './API/Endpoints';
 import { getUname } from './Utilities';
 import { postRequest } from './Services/ApiCall';
 
+
 const ShowCode = ({navigation,route}) => {
   const data = route.params.data || {}; // Accessing the passed data
+
+
   console.log("Data is",data);
   const patternCode = data[0].cardIndex+data[1].cardIndex+data[2].cardIndex+data[3].cardIndex;
   console.log(patternCode)
@@ -44,8 +47,22 @@ const ShowCode = ({navigation,route}) => {
           <View
             key={item.id}
             style={[styles.colorBox, {backgroundColor: item.color}]}>
-            {/* <Text style={styles.colorText}>{item.id}</Text> */}
-            {/* <Text style={styles.colorName}>{item.colorName}</Text> */}
+            <Text
+          style={
+            item.colorName == 'Yellow'
+              ? [{color: 'black'}, styles.boxText]
+              : [styles.boxText, {color: 'white'}]
+          }>
+          {item.clicked || item.id}
+        </Text>
+        <Text
+         style={
+          item.colorName == 'Yellow'
+            ? [{color: 'black'}, styles.ColorText]
+            : [styles.ColorText, {color: 'white'}]
+        }>
+        {item.colorName}
+      </Text>
           </View>
         ))
       ) : (
@@ -70,6 +87,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+  },
+  ColorText: {
+    fontSize: 14,
+    color: 'black',
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   colorBox: {
     width: 110,

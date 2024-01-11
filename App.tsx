@@ -15,6 +15,7 @@ import { Login } from "./src/Login";
 import ShowCode from "./src/ShowCode";
 import SecretPattern from "./src/SecretPattern";
 import ColorGrid from "./src/ColorGrid";
+import DataShow from "./src/DataShow";
 const Stack = createNativeStackNavigator();
 
 
@@ -41,6 +42,7 @@ const handleLogin = (data:any) => {
         <Stack.Screen name="Grid" component={ColorGrid} />
         <Stack.Screen name="Selected Pattern" component={ShowCode} />
         <Stack.Screen name="Scanner" component={Scanner} />
+        <Stack.Screen name="MsgViewer" component={DataShow} options={{title:"Encrypted Meassage"}}/>
         <Stack.Screen name="Secret Pattern"  component={SecretPattern} options={{
              headerLeft:()=> null,
              headerBackVisible: false,

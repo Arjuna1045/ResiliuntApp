@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "180491280564",
+    "project_id": "resiliunt-a9bde",
+    "storage_bucket": "resiliunt-a9bde.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180491280564:android:6e2d45703a867f129cf7e1",
+        "android_client_info": {
+          "package_name": "com.securecreation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "180491280564-g61vieb0rdaepn9kuet8b73eoplpe30s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.securecreation",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "180491280564-iibljgcrto8th1fr2g978ijum2khujap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPsPumEi2rF-5gHk6ztHr30M2uK73VJhI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "180491280564-iibljgcrto8th1fr2g978ijum2khujap.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
