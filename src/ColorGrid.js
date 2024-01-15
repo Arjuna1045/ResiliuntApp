@@ -113,7 +113,7 @@ const ColorGrid = ({navigation}) => {
         numColumns={3} // Adjust as per your requirement
       />
       <Text style={styles.clickedOrder}>
-        PATTERN : {clickedBoxes.join(', ')}
+        Your Selected Pattern : {clickedBoxes.join(', ')}
       </Text>
     </View>
   );

@@ -77,6 +77,7 @@ android {
 
     namespace "com.securecreation"
     defaultConfig {
+        resConfigs "en", "US"
         
   missingDimensionStrategy "react-native-camera","general"
         applicationId "com.securecreation"

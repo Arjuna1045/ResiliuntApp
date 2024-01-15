@@ -71,7 +71,7 @@ const ShowCode = ({navigation,route}) => {
       </View>
       <View style={{position:'absolute',bottom:10,left:'40%'}}>
       <TouchableOpacity onPress={checkpattern} style={styles.button} >
-        <Text style={{color:'white',fontSize:16,fontWeight:'700',letterSpacing:0.4}}>Get Code</Text>
+        <Text style={{color:'white',fontSize:16,fontWeight:'700',letterSpacing:0.4}}>Get Secret</Text>
       </TouchableOpacity>
       </View>
     </View>

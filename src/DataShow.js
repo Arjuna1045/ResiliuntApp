@@ -6,10 +6,14 @@ const DataShow = ({route,navigation}) => {
     const msg = route.params.msg || {}
     console.log(route.params)
 
+    
+
+    const cleanedString = data.encmsg.replace(/["\\]/g, '');
+
   const [modalVisible, setModalVisible] = useState(true);
   return (
     <View style={styles.centeredView}>
-        <Text style={{color:'black',fontSize:16}}>{data.encmsg}</Text>
+        <Text style={{color:'black',fontSize:16}}>{cleanedString}</Text>
       {/* <Modal
         animationType="slide"
         transparent={true}

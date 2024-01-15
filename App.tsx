@@ -39,9 +39,9 @@ const handleLogin = (data:any) => {
   <NavigationContainer>
         <Stack.Navigator initialRouteName="login" >
         <Stack.Screen name="login" component={Login}  options={{ headerShown: false }}/>
-        <Stack.Screen name="Grid" component={ColorGrid} />
+        <Stack.Screen name="Grid" component={ColorGrid}  options={{title:'Select your Pattern'}}/>
         <Stack.Screen name="Selected Pattern" component={ShowCode} />
-        <Stack.Screen name="Scanner" component={Scanner} />
+        <Stack.Screen name="Scanner" component={Scanner} options={{title:'Scan Message QR'}}/>
         <Stack.Screen name="MsgViewer" component={DataShow} options={{title:"Encrypted Meassage"}}/>
         <Stack.Screen name="Secret Pattern"  component={SecretPattern} options={{
              headerLeft:()=> null,

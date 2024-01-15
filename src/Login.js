@@ -15,6 +15,7 @@ import {
   Image,
   Linking,
 } from 'react-native';
+import md5 from 'md5';
 import auth from '@react-native-firebase/auth';
 import {Formik, useFormik} from 'formik';
 import axios, {Axios} from 'axios';
@@ -50,7 +51,7 @@ export function Login({navigation}) {
       webClientId: '180491280564-iibljgcrto8th1fr2g978ijum2khujap.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the idToken on the user object, and for offline access.
       // offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
       // hostedDomain: '', // specifies a hosted domain restriction
-      // forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
+      // forceCodeForRefreshToken:true, // [Android] related to `serverAuthCode`, read the docs link below *.
       // accountName: '', // [Android] specifies an account name on the device that should be used
       // iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
       // googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. GoogleService-Info-Staging
@@ -131,6 +132,7 @@ async function onGoogleButtonPress() {
   };
   const handleLogin = async (user, pwd) => {
     console.log(' token called');
+    user=user.toLowerCase();
     setUser(user);
 
     // console.log(user, pwd);
@@ -144,7 +146,7 @@ async function onGoogleButtonPress() {
     const method = 'POST';
     const body = qs.stringify({
       username: user,
-      password: pwd,
+      password: md5(pwd),
       grant_type: 'password',
       client_id: 'rw_viewer',
       scope: 'openid',
@@ -341,12 +343,12 @@ async function onGoogleButtonPress() {
                     color={GoogleSigninButton.Color.Dark}
                     onPress={onGoogleButtonPress}
                   /> */}
-                  <GoogleSigninButton
+                  {/* <GoogleSigninButton
                 style={{width: 192, height: 48}}
                 size={GoogleSigninButton.Size.Wide}
                 color={GoogleSigninButton.Color.Dark}
                 onPress={_signIn} 
-              /> 
+              />  */}
                 </View>
 
                 {/* <TouchableOpacity>
