@@ -14,6 +14,7 @@ import {
   SafeAreaView,
   Image,
   Linking,
+  ActivityIndicator,
 } from 'react-native';
 import md5 from 'md5';
 import auth from '@react-native-firebase/auth';
@@ -39,26 +40,23 @@ import {Dimensions} from 'react-native';
 
 const {width, height} = Dimensions.get('window');
 import {Appearance} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import Share from 'react-native-share';
 
-export function Login({navigation}) {
+export function Login() {
+  
   // const [showpwd, setShowpwd] = useState(false);
   const deviceTheme = Appearance.getColorScheme();
   console.log(deviceTheme);
+  const navigation = useNavigation();
+  const route = useRoute();
+  const [loading,setLoading]=useState(false)
 
   useEffect(() => {
-    GoogleSignin.configure({
-      scopes: ['https://www.googleapis.com/auth/userinfo.email'], // what API you want to access on behalf of the user, default is email and profile
-      webClientId: '180491280564-iibljgcrto8th1fr2g978ijum2khujap.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the idToken on the user object, and for offline access.
-      // offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-      // hostedDomain: '', // specifies a hosted domain restriction
-      // forceCodeForRefreshToken:true, // [Android] related to `serverAuthCode`, read the docs link below *.
-      // accountName: '', // [Android] specifies an account name on the device that should be used
-      // iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
-      // googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. GoogleService-Info-Staging
-      // openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
-      // profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
-    });
+ 
   }, []);
+
+  // }, []); // Ensure that route.params is included in the dependencies array
 
 
 const [user, setUser] = useState('');
@@ -70,6 +68,10 @@ const [user, setUser] = useState('');
 
 const [loggedIn, setloggedIn] = useState(false);
 const [userInfo, setuserInfo] = useState([]);
+
+
+const [imageUri, setImageUri] = useState(null);
+
 
 async function onGoogleButtonPress() {
 
@@ -131,6 +133,7 @@ async function onGoogleButtonPress() {
     }
   };
   const handleLogin = async (user, pwd) => {
+    setLoading(true)
     console.log(' token called');
     user=user.toLowerCase();
     setUser(user);
@@ -174,6 +177,7 @@ async function onGoogleButtonPress() {
       setUname(user);
       let newExp = Date.now() + jsonResponse.expires_in * 1000;
       await setTokenInfo(newExp);
+      setLoading(false)
       navigation.navigate('Grid');
       // test();
     }
@@ -356,6 +360,10 @@ async function onGoogleButtonPress() {
             </TouchableOpacity> */}
               </View>
             </Formik>
+            {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200 }} />}
+            <View style={{ position: 'absolute', top:"50%",right: 0, left: 0 }}>
+      <ActivityIndicator animating={loading} size="large" color="green" />
+    </View>
           </ScrollView>
         </View>
       </SafeAreaView>

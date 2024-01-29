@@ -16,6 +16,8 @@ import ShowCode from "./src/ShowCode";
 import SecretPattern from "./src/SecretPattern";
 import ColorGrid from "./src/ColorGrid";
 import DataShow from "./src/DataShow";
+import SecretMessage from "./src/SecretMessage";
+import LogoutButton from "./src/Utilities/LogoutButton";
 const Stack = createNativeStackNavigator();
 
 
@@ -36,16 +38,23 @@ const handleLogin = (data:any) => {
 // screenOptions={{headerShown:false}}
   return (
     <AlertNotificationRoot>
-  <NavigationContainer>
+        <NavigationContainer>
         <Stack.Navigator initialRouteName="login" >
-        <Stack.Screen name="login" component={Login}  options={{ headerShown: false }}/>
-        <Stack.Screen name="Grid" component={ColorGrid}  options={{title:'Select your Pattern'}}/>
-        <Stack.Screen name="Selected Pattern" component={ShowCode} />
-        <Stack.Screen name="Scanner" component={Scanner} options={{title:'Scan Message QR'}}/>
-        <Stack.Screen name="MsgViewer" component={DataShow} options={{title:"Encrypted Meassage"}}/>
+        <Stack.Screen name="login" component={Login}  options={{ headerShown: false ,headerRight: () => <LogoutButton />,}}/>
+        <Stack.Screen name="Grid" component={ColorGrid}  options={{title:'Select your Pattern',headerRight: () => <LogoutButton />,}}/>
+        <Stack.Screen name="Selected Pattern" component={ShowCode}  options={{headerRight: () => <LogoutButton />}} />
+        <Stack.Screen name="Scanner" component={Scanner} options={{title:'Scan Message QR',headerRight: () => <LogoutButton />,}}/>
+        <Stack.Screen name="MsgViewer" component={DataShow} options={{title:"Encrypted Meassage",headerRight: () => <LogoutButton />,}}/>
         <Stack.Screen name="Secret Pattern"  component={SecretPattern} options={{
              headerLeft:()=> null,
              headerBackVisible: false,
+             headerRight: () => <LogoutButton />,
+        }}/>
+         <Stack.Screen name="ShowCode"  component={SecretMessage} options={{
+            //  headerLeft:()=> null,
+            //  headerBackVisible: false,
+            headerRight: () => <LogoutButton />,
+             title:'Secret Message'
         }}/>
       </Stack.Navigator>
   </NavigationContainer>
