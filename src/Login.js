@@ -13,16 +13,14 @@ import {
   StatusBar,
   SafeAreaView,
   Image,
-  Linking,
-  ActivityIndicator,
 } from 'react-native';
-import md5 from 'md5';
-import auth from '@react-native-firebase/auth';
+
 import {Formik, useFormik} from 'formik';
 import axios, {Axios} from 'axios';
 import {Endpoints} from './API/Endpoints';
 import * as Yup from 'yup';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import md5 from 'md5';
 
 import {
   GoogleSignin,
@@ -40,77 +38,50 @@ import {Dimensions} from 'react-native';
 
 const {width, height} = Dimensions.get('window');
 import {Appearance} from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import Share from 'react-native-share';
 
-export function Login() {
-  
+export function Login({navigation}) {
   // const [showpwd, setShowpwd] = useState(false);
   const deviceTheme = Appearance.getColorScheme();
   console.log(deviceTheme);
-  const navigation = useNavigation();
-  const route = useRoute();
-  const [loading,setLoading]=useState(false)
 
   useEffect(() => {
- 
+    GoogleSignin.configure({
+      webClientId: 'YOUR_WEB_CLIENT_ID_FROM_FIREBASE',
+      offlineAccess: true,
+      forceCodeForRefreshToken: true,
+      iosClientId:
+        '676022014408-duhigrdt2i720ntdqb7c5k6ktdl9nnek.apps.googleusercontent.com',
+    });
   }, []);
-
-  // }, []); // Ensure that route.params is included in the dependencies array
-
-
-const [user, setUser] = useState('');
+  const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
   const [role, setRole] = useState('');
   const handleShowEye = () => {
     setShowpwd(() => !showpwd);
   };
 
-const [loggedIn, setloggedIn] = useState(false);
-const [userInfo, setuserInfo] = useState([]);
-
-
-const [imageUri, setImageUri] = useState(null);
-
-
-async function onGoogleButtonPress() {
-
-  // Check if your device supports Google Play
-  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-  // Get the users ID token
-  const { idToken } = await GoogleSignin.signIn();
-
-  // Create a Google credential with the token
-  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-  // Sign-in the user with the credential
-  return auth().signInWithCredential(googleCredential);
-}
-
-  const _signIn = async () => {
-    console.log("Called")
-    // Linking.openURL("https://auth.multitenancy.realware.app/auth/realms/undergrid/protocol/openid-connect/auth?client_id=rw_viewer&redirect_uri=https://sccom.realware.app/&response_type=code&scope=openid&kc_idp_hint=google")
+  const signInWithGoogle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const data = await GoogleSignin.signIn();
-      setloggedIn(true);
-      console.log("Response is ....",data)
+      const userInfo = await GoogleSignin.signIn();
+      const googleCredential = firebase.auth.GoogleAuthProvider.credential(
+        userInfo.idToken,
+      );
+      await firebase.auth().signInWithCredential(googleCredential);
+      console.log('Logged in with Google!', userInfo);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
-        Alert.alert('Cancel');
+        // User cancelled the login flow
+        console.log('Sign in cancelled');
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        Alert.alert('Signin in progress');
-        // operation (f.e. sign in) is in progress already
+        console.log('Sign in is in progress');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert('PLAY_SERVICES_NOT_AVAILABLE');
-        // play services not available or outdated
+        console.log('Play services not available');
       } else {
-        console.log("[ Error : ] ",error)
+        console.log('Something went wrong:', error);
       }
     }
   };
-
   const [loader, setLoader] = useState(true);
   const checkAccessToken = async () => {
     const storedAccessToken = await getToken();
@@ -133,10 +104,10 @@ async function onGoogleButtonPress() {
     }
   };
   const handleLogin = async (user, pwd) => {
-    setLoading(true)
     console.log(' token called');
-    user=user.toLowerCase();
+    user = user.toLowerCase();
     setUser(user);
+    setUname(user);
 
     // console.log(user, pwd);
 
@@ -173,11 +144,10 @@ async function onGoogleButtonPress() {
 
     if (jsonResponse.hasOwnProperty('access_token')) {
       saveToken(jsonResponse.access_token);
-      
-      setUname(user);
+      // let uname = user.split('@');
+      // setUname(uname[0]);
       let newExp = Date.now() + jsonResponse.expires_in * 1000;
       await setTokenInfo(newExp);
-      setLoading(false)
       navigation.navigate('Grid');
       // test();
     }
@@ -212,9 +182,7 @@ async function onGoogleButtonPress() {
                 source={require('./images/key.jpg')}
               /> */}
               </View>
-              <View style={{flexDirection: 'column',alignItems:'center'}}>
-               
-             
+              <View style={{flexDirection: 'column', alignItems: 'center'}}>
                 <View style={{width: 300, height: 100}}>
                   <Image
                     source={require('./assets/logoo.png')}
@@ -345,14 +313,8 @@ async function onGoogleButtonPress() {
                     style={loginstyles.button}
                     size={GoogleSigninButton.Size.Wide}
                     color={GoogleSigninButton.Color.Dark}
-                    onPress={onGoogleButtonPress}
+                    onPress={signInWithGoogle}
                   /> */}
-                  {/* <GoogleSigninButton
-                style={{width: 192, height: 48}}
-                size={GoogleSigninButton.Size.Wide}
-                color={GoogleSigninButton.Color.Dark}
-                onPress={_signIn} 
-              />  */}
                 </View>
 
                 {/* <TouchableOpacity>
@@ -360,10 +322,6 @@ async function onGoogleButtonPress() {
             </TouchableOpacity> */}
               </View>
             </Formik>
-            {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200 }} />}
-            <View style={{ position: 'absolute', top:"50%",right: 0, left: 0 }}>
-      <ActivityIndicator animating={loading} size="large" color="green" />
-    </View>
           </ScrollView>
         </View>
       </SafeAreaView>
@@ -437,11 +395,12 @@ const loginstyles = StyleSheet.create({
   },
   loginText: {
     marginTop: 150,
+    paddingVertical: 2,
   },
   textBig: {
     fontSize: 34,
     fontWeight: 'bold',
-    letterSpacing:0.3,
+    letterSpacing: 0.3,
     // marginBottom: 5,
     color: 'whitesmoke',
   },
@@ -457,6 +416,8 @@ const loginstyles = StyleSheet.create({
   },
   loginArea: {
     marginTop: 40,
+    background: 'linear-gradient(45deg, #e66465, #9198e5)',
+    boxShadow: '10px 10px 20px rgba(0, 0, 0, 0.1)',
   },
   forgot: {
     textAlign: 'center',
@@ -471,7 +432,7 @@ const loginstyles = StyleSheet.create({
     backgroundColor: '#0061d8',
     paddingVertical: 16,
     alignItems: 'center',
-    borderRadius: 25,
+    borderRadius: 10,
     marginTop: 3,
   },
   label: {
@@ -508,9 +469,12 @@ const loginstyles = StyleSheet.create({
     flex: 1,
   },
   inputText: {
+    padding: 15,
+    // paddingBottom:2,
     flex: 1,
     paddingLeft: 10,
-    fontSize: 14,
+    fontSize: 16,
+    height: 44,
     color: 'grey',
     backgroundColor: '#f1f1f1',
   },
