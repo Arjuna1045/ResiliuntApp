@@ -47,52 +47,45 @@ export function Login({navigation}) {
 
   useEffect(() => {
     GoogleSignin.configure({
-      scopes: ['https://www.googleapis.com/auth/userinfo.email'], // what API you want to access on behalf of the user, default is email and profile
-      webClientId: '180491280564-iibljgcrto8th1fr2g978ijum2khujap.apps.googleusercontent.com', // client ID of type WEB for your server. Required to get the idToken on the user object, and for offline access.
-      // offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-      // hostedDomain: '', // specifies a hosted domain restriction
-      // forceCodeForRefreshToken:true, // [Android] related to `serverAuthCode`, read the docs link below *.
-      // accountName: '', // [Android] specifies an account name on the device that should be used
-      // iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
-      // googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. GoogleService-Info-Staging
-      // openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
-      // profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+      webClientId: 'YOUR_WEB_CLIENT_ID_FROM_FIREBASE',
+      offlineAccess: true,
+      forceCodeForRefreshToken: true,
+      iosClientId:
+        '676022014408-duhigrdt2i720ntdqb7c5k6ktdl9nnek.apps.googleusercontent.com',
     });
   }, []);
 
-
-const [user, setUser] = useState('');
+  const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
   const [role, setRole] = useState('');
   const handleShowEye = () => {
     setShowpwd(() => !showpwd);
   };
 
-const [loggedIn, setloggedIn] = useState(false);
-const [userInfo, setuserInfo] = useState([]);
+  const [loggedIn, setloggedIn] = useState(false);
+  const [userInfo, setuserInfo] = useState([]);
 
-async function onGoogleButtonPress() {
+  async function onGoogleButtonPress() {
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+    // Get the users ID token
+    const {idToken} = await GoogleSignin.signIn();
 
-  // Check if your device supports Google Play
-  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-  // Get the users ID token
-  const { idToken } = await GoogleSignin.signIn();
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
-  // Create a Google credential with the token
-  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-  // Sign-in the user with the credential
-  return auth().signInWithCredential(googleCredential);
-}
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(googleCredential);
+  }
 
   const _signIn = async () => {
-    console.log("Called")
+    console.log('Called');
     // Linking.openURL("https://auth.multitenancy.realware.app/auth/realms/undergrid/protocol/openid-connect/auth?client_id=rw_viewer&redirect_uri=https://sccom.realware.app/&response_type=code&scope=openid&kc_idp_hint=google")
     try {
       await GoogleSignin.hasPlayServices();
       const data = await GoogleSignin.signIn();
       setloggedIn(true);
-      console.log("Response is ....",data)
+      console.log('Response is ....', data);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
@@ -104,7 +97,7 @@ async function onGoogleButtonPress() {
         Alert.alert('PLAY_SERVICES_NOT_AVAILABLE');
         // play services not available or outdated
       } else {
-        console.log("[ Error : ] ",error)
+        console.log('[ Error : ] ', error);
       }
     }
   };
@@ -132,7 +125,7 @@ async function onGoogleButtonPress() {
   };
   const handleLogin = async (user, pwd) => {
     console.log(' token called');
-    user=user.toLowerCase();
+    user = user.toLowerCase();
     setUser(user);
 
     // console.log(user, pwd);
@@ -170,7 +163,7 @@ async function onGoogleButtonPress() {
 
     if (jsonResponse.hasOwnProperty('access_token')) {
       saveToken(jsonResponse.access_token);
-      
+
       setUname(user);
       let newExp = Date.now() + jsonResponse.expires_in * 1000;
       await setTokenInfo(newExp);
@@ -208,9 +201,7 @@ async function onGoogleButtonPress() {
                 source={require('./images/key.jpg')}
               /> */}
               </View>
-              <View style={{flexDirection: 'column',alignItems:'center'}}>
-               
-             
+              <View style={{flexDirection: 'column', alignItems: 'center'}}>
                 <View style={{width: 300, height: 100}}>
                   <Image
                     source={require('./assets/logoo.png')}
@@ -433,7 +424,7 @@ const loginstyles = StyleSheet.create({
   textBig: {
     fontSize: 34,
     fontWeight: 'bold',
-    letterSpacing:0.3,
+    letterSpacing: 0.3,
     // marginBottom: 5,
     color: 'whitesmoke',
   },
