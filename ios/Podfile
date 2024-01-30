@@ -1,4 +1,14 @@
 # Resolve react_native_pods.rb with node to allow for hoisting
+# :hermes_enabled => false,
+permissions_path = '../node_modules/react-native-permissions/ios'
+pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
+pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone/Permission-Microphone.podspec"
+pod 'Permission-Camera', :path => "#{permissions_path}/Camera/Permission-Camera.podspec"
+pod 'Firebase', :modular_headers =>  true
+pod 'FirebaseCoreInternal', :modular_headers => true
+pod 'GoogleUtilities', :modular_headers  => true
+pod 'FirebaseCore', :modular_headers  =>  true
+
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
     "react-native/scripts/react_native_pods.rb",
@@ -30,11 +40,14 @@ target 'securecreation' do
 
   use_react_native!(
     :path => config[:reactNativePath],
+
+    :hermes_enabled => false,
+  #  :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => flipper_config,
+    :flipper_configuration => FlipperConfiguration.enabled(["Debug"], {'Flipper' => '0.163.0'}),
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
